@@ -6,169 +6,214 @@
 <title>Pergunte ao Rol ANS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62.5..100,500..800&family=Inter:wght@400..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
 <style>
-/* Layout: ficha de consulta da ANS. Faixa petróleo forte com a pergunta no topo; embaixo, a resposta pronta e as fichas do Rol em cartões brancos de borda firme, verde = cobre, vermelho = não cobre. */
+/* Visual de site: barra no topo (marca, atalhos, claro/escuro), pergunta grande no meio e, no computador, duas colunas:
+   respostas e fichas à esquerda, regras gerais e além do Rol à direita. Cartões brancos de borda fina; verde = cobre, vermelho = não cobre. */
 :root {
-  --bg: #edf2f3; --surface: #ffffff; --surface-2: #e2edef; --ink: #08191d; --muted: #3c555b; --line: #bccdd1; --line-2: #8fa9af;
-  --accent: #00677c; --accent-ink: #ffffff; --accent-soft: #d2ebf0; --band: #005568; --band-ink: #ffffff; --band-muted: #cdeaf0;
-  --ok: #04763d; --ok-soft: #d3f1df; --no: #b3261e; --no-soft: #fde5df;
-  --dut: #8a4500; --dut-soft: #ffe8c2; --pac: #5b2aa8; --pac-soft: #ebe0fd; --warn: #b3261e; --warn-soft: #fde5df;
-  --sombra: 0 1px 2px rgba(6, 40, 48, .08), 0 3px 10px rgba(6, 40, 48, .06);
-  --sombra-forte: 0 10px 30px rgba(4, 40, 48, .18);
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-display: "Archivo", "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-  --r: 12px;
+  --bg: #f6f8f8; --surface: #ffffff; --surface-2: #eef3f3; --ink: #0b1d21; --muted: #4c6368; --faint: #75898d;
+  --line: #e0e7e8; --line-2: #c9d5d7;
+  --accent: #0f6e56; --accent-hover: #0b5c48; --accent-ink: #ffffff; --accent-soft: #e1f5ee;
+  --ok: #2e6510; --ok-soft: #e8f3dc; --no: #a32d2d; --no-soft: #fcebeb;
+  --dut: #8a5300; --dut-soft: #fcf0da; --pac: #4b3fb3; --pac-soft: #efeefe; --warn: #a32d2d; --warn-soft: #fcebeb;
+  --sombra: 0 1px 2px rgba(11, 29, 33, .04);
+  --sombra-busca: 0 1px 2px rgba(11, 29, 33, .05), 0 10px 30px -6px rgba(11, 29, 33, .13);
+  --vidro: rgba(246, 248, 248, .84); --topo-bg: rgba(255, 255, 255, .88);
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --r: 14px; --topo-h: 60px; --busca-h: 80px; --fixo: calc(var(--topo-h) + var(--busca-h));
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #071316; --surface: #0f2226; --surface-2: #143037; --ink: #eef7f8; --muted: #a8c1c6; --line: #2a464c; --line-2: #53767d;
-  --accent: #4fc6dc; --accent-ink: #022027; --accent-soft: #10404a; --band: #063b47; --band-ink: #ffffff; --band-muted: #bfe4ec;
-  --ok: #5edb98; --ok-soft: #0f3b28; --no: #ff8f7a; --no-soft: #431b15;
-  --dut: #ffc561; --dut-soft: #3e2c0b; --pac: #c8adff; --pac-soft: #2e2248; --warn: #ff8f7a; --warn-soft: #431b15;
-  --sombra: 0 1px 2px rgba(0, 0, 0, .45); --sombra-forte: 0 10px 30px rgba(0, 0, 0, .5);
+  --bg: #0b1416; --surface: #122225; --surface-2: #182b2f; --ink: #e6f2f3; --muted: #9db3b8; --faint: #7d979c;
+  --line: #22363a; --line-2: #314c51;
+  --accent: #5dcaa5; --accent-hover: #80d9bb; --accent-ink: #04342c; --accent-soft: #0f3a30;
+  --ok: #a9d98a; --ok-soft: #1a3510; --no: #f5aaaa; --no-soft: #3a1717;
+  --dut: #f2c27a; --dut-soft: #3a2a0d; --pac: #c6c1fa; --pac-soft: #27224f; --warn: #f5aaaa; --warn-soft: #3a1717;
+  --sombra: 0 1px 2px rgba(0, 0, 0, .3);
+  --sombra-busca: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -6px rgba(0, 0, 0, .45);
+  --vidro: rgba(11, 20, 22, .84); --topo-bg: rgba(11, 20, 22, .88);
   color-scheme: dark;
 } }
 :root[data-theme="dark"] {
-  --bg: #071316; --surface: #0f2226; --surface-2: #143037; --ink: #eef7f8; --muted: #a8c1c6; --line: #2a464c; --line-2: #53767d;
-  --accent: #4fc6dc; --accent-ink: #022027; --accent-soft: #10404a; --band: #063b47; --band-ink: #ffffff; --band-muted: #bfe4ec;
-  --ok: #5edb98; --ok-soft: #0f3b28; --no: #ff8f7a; --no-soft: #431b15;
-  --dut: #ffc561; --dut-soft: #3e2c0b; --pac: #c8adff; --pac-soft: #2e2248; --warn: #ff8f7a; --warn-soft: #431b15;
-  --sombra: 0 1px 2px rgba(0, 0, 0, .45); --sombra-forte: 0 10px 30px rgba(0, 0, 0, .5);
+  --bg: #0b1416; --surface: #122225; --surface-2: #182b2f; --ink: #e6f2f3; --muted: #9db3b8; --faint: #7d979c;
+  --line: #22363a; --line-2: #314c51;
+  --accent: #5dcaa5; --accent-hover: #80d9bb; --accent-ink: #04342c; --accent-soft: #0f3a30;
+  --ok: #a9d98a; --ok-soft: #1a3510; --no: #f5aaaa; --no-soft: #3a1717;
+  --dut: #f2c27a; --dut-soft: #3a2a0d; --pac: #c6c1fa; --pac-soft: #27224f; --warn: #f5aaaa; --warn-soft: #3a1717;
+  --sombra: 0 1px 2px rgba(0, 0, 0, .3);
+  --sombra-busca: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -6px rgba(0, 0, 0, .45);
+  --vidro: rgba(11, 20, 22, .84); --topo-bg: rgba(11, 20, 22, .88);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-.wrap { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-a { color: var(--accent); font-weight: 600; }
+html { scroll-padding-top: calc(var(--fixo) + 12px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+a { color: var(--accent); }
 button { font: inherit; color: inherit; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.ic { width: 17px; height: 17px; vertical-align: -3px; margin-right: 5px; flex: none; }
+.ic { width: 16px; height: 16px; vertical-align: -3px; margin-right: 5px; flex: none; }
 .num { font-variant-numeric: tabular-nums; }
+.chip, .atalho, .btn-sec, .btn-copiar, .tema, .menu a, .menu button, .btn-perguntar, .tag { transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s; }
 
-/* faixa do topo */
-.faixa { background: var(--band); color: var(--band-ink); }
-.faixa .wrap { padding-block: 26px 66px; display: grid; gap: 8px; }
-.selo { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--band-muted); }
-h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-stretch: 92%; font-size: clamp(32px, 6vw, 48px); line-height: 1.04; letter-spacing: -.01em; text-wrap: balance; }
-.fonte { margin: 0; color: var(--band-muted); font-size: 15px; font-weight: 500; max-width: 72ch; }
+/* barra do topo */
+.topo { background: var(--topo-bg); border-bottom: 1px solid var(--line); -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px); z-index: 20; }
+.topo-in { max-width: 1120px; margin: 0 auto; height: var(--topo-h); display: flex; align-items: center; gap: 20px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.marca { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 650; font-size: 16px; letter-spacing: -.01em; white-space: nowrap; }
+.marca-ic { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); display: inline-grid; place-items: center; flex: none; }
+.marca-ic svg { width: 16px; height: 16px; }
+.menu { display: flex; gap: 2px; margin-inline: auto; }
+.menu a, .menu button { border: 0; background: none; padding: 7px 12px; border-radius: 8px; font-size: 14.5px; font-weight: 500; color: var(--muted); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.menu a:hover, .menu button:hover { color: var(--ink); background: var(--surface-2); }
+.menu [aria-current="page"], .menu [aria-pressed="true"] { color: var(--accent); }
+.tema { flex: none; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 13px 6px 10px; font-size: 14px; font-weight: 500; line-height: 1.2; cursor: pointer; }
+.tema:hover { border-color: var(--accent); color: var(--accent); }
+.tema svg { width: 16px; height: 16px; flex: none; }
+.tema .sol, .tema[data-escuro="1"] .lua { display: none; }
+.tema[data-escuro="1"] .sol { display: inline; }
 
-/* pergunta */
-.pergunta { margin-top: -44px; }
-form { display: flex; gap: 8px; background: var(--surface); border: 2px solid var(--surface); border-radius: 14px; padding: 8px; box-shadow: var(--sombra-forte); }
-form input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 18px; font-weight: 500; padding: 12px 10px; }
-form input::placeholder { color: var(--muted); font-weight: 400; }
+/* abertura e pergunta */
+.abertura { text-align: center; padding: 56px 16px 18px; }
+.abertura h1 { margin: 0; font-size: clamp(30px, 4.4vw, 44px); line-height: 1.1; font-weight: 650; letter-spacing: -.025em; text-wrap: balance; }
+.fonte { margin: 10px auto 0; color: var(--muted); font-size: 15px; max-width: 72ch; text-wrap: balance; }
+.busca { position: sticky; top: 0; z-index: 15; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid transparent; }
+.busca.colada { background: var(--vidro); -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px); border-bottom-color: var(--line); }
+form { max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; padding: 6px 6px 6px 16px; box-shadow: var(--sombra-busca); }
+form:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), var(--sombra-busca); }
+.lupa { width: 20px; height: 20px; color: var(--faint); flex: none; }
+form input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 17px; padding: 10px 4px; }
+form input::placeholder { color: var(--faint); }
 form input:focus { outline: none; }
-form:focus-within { border-color: var(--accent); }
-.btn-perguntar { border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 16px; padding: 0 24px; min-height: 48px; cursor: pointer; white-space: nowrap; }
-.btn-perguntar:hover { filter: brightness(1.1); }
-.dicas, .atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; align-items: center; }
-.dicas .rot, .atalhos .rot { color: var(--muted); font-size: 13.5px; font-weight: 600; margin-right: 2px; }
-.atalhos { margin-top: 10px; }
-.chip { border: 1px solid var(--line-2); background: var(--surface); border-radius: 999px; padding: 5px 13px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--ink); }
+.btn-perguntar { flex: none; border: 0; border-radius: 11px; background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 15.5px; padding: 0 22px; min-height: 46px; cursor: pointer; white-space: nowrap; }
+.btn-perguntar:hover { background: var(--accent-hover); }
+.sob-busca { max-width: 760px; margin: 0 auto; padding: 6px max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 10px; }
+.dicas { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 8px; }
+.dicas .rot { font-size: 13.5px; color: var(--muted); font-weight: 500; margin-right: 2px; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
-.chip-g { border: 1.5px solid var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
-.chip-g:hover { background: var(--accent); color: var(--accent-ink); }
-.chip-g[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-.aviso-ia { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+.aviso-ia { margin: 0; font-size: 14px; color: var(--muted); text-align: center; }
+
+/* colunas: no computador, respostas à esquerda e regras gerais à direita; no celular, uma coluna */
+.layout { max-width: 1120px; margin: 26px auto 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; align-items: start; }
+.col-lado, .col-main { display: grid; gap: 16px; min-width: 0; align-content: start; }
+.col-main { gap: 20px; }
+
+/* atalhos das regras gerais: lista na coluna da direita (computador) ou fileira de botões (celular) */
+.atalhos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.atalhos .rot { font-size: 13.5px; color: var(--muted); font-weight: 500; margin-right: 2px; }
+.atalho { display: inline-flex; align-items: center; gap: 7px; flex: none; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 13px 6px 10px; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; text-align: left; }
+.atalho svg { width: 16px; height: 16px; flex: none; color: var(--accent); }
+.atalho .seta { display: none; }
+.atalho:hover { border-color: var(--accent); color: var(--accent); }
+.atalho[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.atalho[aria-pressed="true"] svg { color: currentColor; }
+.atalho.x svg, .atalho.x:hover { color: var(--pac); }
+.atalho.x:hover { border-color: var(--pac); }
+.atalho.x[aria-pressed="true"] { background: var(--pac); border-color: var(--pac); color: var(--surface); }
+.atalho.x[aria-pressed="true"] svg { color: currentColor; }
 
 /* resposta do Claude */
-.ia { margin-top: 24px; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; padding: 16px 18px 18px; display: grid; gap: 10px; box-shadow: var(--sombra); }
+.ia { background: var(--surface); border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line)); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 10px; box-shadow: var(--sombra); min-width: 0; }
 .ia-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-.ia-rot { font-family: var(--font-display); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; background: var(--accent); color: var(--accent-ink); font-weight: 700; border-radius: 999px; padding: 3px 11px; }
-.ia-q { flex: 1 1 260px; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.ia-rot, .pronta-rot { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; font-weight: 650; color: var(--accent); }
+.ia-rot::before, .pronta-rot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.ia-q { flex: 1 1 240px; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
 .ia-acoes { display: flex; gap: 6px; }
-.btn-sec { border: 1.5px solid var(--line-2); background: var(--surface); border-radius: 8px; padding: 5px 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.btn-sec:hover { border-color: var(--accent); color: var(--accent); }
 .ia-status { font-size: 14.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
 .ia-status .pontos::after { content: "…"; display: inline-block; animation: piscar 1.2s infinite; }
 @keyframes piscar { 50% { opacity: .2; } }
 @media (prefers-reduced-motion: reduce) { .ia-status .pontos::after { animation: none; } }
-.ia-texto { font-size: 16.5px; max-width: 75ch; overflow-wrap: anywhere; }
+.ia-texto { font-size: 16px; max-width: 75ch; overflow-wrap: anywhere; }
 .ia-texto p { margin: 0 0 8px; }
 .ia-texto ul { margin: 0 0 8px; padding-left: 22px; display: grid; gap: 6px; }
-.ia-texto strong { font-weight: 700; }
-.ref { font-variant-numeric: tabular-nums; font-size: 12.5px; font-weight: 700; border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent); border-radius: 6px; padding: 0 6px; cursor: pointer; vertical-align: 1px; }
+.ia-texto strong { font-weight: 650; }
+.ref { font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 600; border: 0; background: var(--accent-soft); color: var(--accent); border-radius: 6px; padding: 1px 6px; cursor: pointer; vertical-align: 1px; }
 .ia-erro { color: var(--warn); font-size: 14.5px; font-weight: 600; }
 .ia-citadas { display: grid; gap: 12px; }
 .ia-citadas > h3 { margin: 6px 0 0; font-size: 14px; color: var(--muted); font-weight: 600; }
 
+/* botões pequenos */
+.btn-sec, .btn-copiar { border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); border-radius: 9px; padding: 6px 12px; font-size: 13.5px; font-weight: 500; line-height: 1.25; cursor: pointer; }
+.btn-copiar { flex: none; padding: 4px 11px; font-size: 13px; }
+.btn-sec:hover, .btn-copiar:hover { border-color: var(--accent); color: var(--accent); }
+.lnk { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 13.5px; font-weight: 600; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent); text-underline-offset: 3px; }
+.lnk:hover { text-decoration-color: currentColor; }
+
 /* lista do Rol */
-.rol { margin-top: 26px; display: grid; gap: 14px; }
+.rol, .gerais { display: grid; gap: 16px; min-width: 0; }
+.gerais:empty, .rol:empty { display: none; }
 .rol-cab { display: grid; gap: 4px; }
-.rol-cab h2 { margin: 0; font-family: var(--font-display); font-size: 23px; font-weight: 800; font-stretch: 94%; line-height: 1.2; text-wrap: balance; }
+.rol-cab h2 { margin: 0; font-size: 21px; font-weight: 650; letter-spacing: -.015em; line-height: 1.25; text-wrap: balance; }
 .rol-cab .sub { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 80ch; }
-.selo-ex { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--dut); background: var(--dut-soft); border-radius: 5px; padding: 2px 7px; vertical-align: 3px; margin-left: 8px; }
-.regra { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 8px; padding: 12px 16px; font-size: 15px; max-width: 80ch; }
-.regra b { font-family: var(--font-display); font-size: 12.5px; text-transform: uppercase; letter-spacing: .08em; display: block; color: var(--accent); margin-bottom: 3px; font-weight: 800; }
+.selo-ex { display: inline-block; vertical-align: 3px; margin-left: 8px; font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; }
+.regra { background: var(--accent-soft); border-radius: 12px; padding: 12px 16px; font-size: 14.5px; max-width: 80ch; }
+.regra b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-bottom: 2px; font-weight: 650; }
 .bloco { display: grid; gap: 12px; }
-.bloco > h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-.bloco > h3 .bola { width: 11px; height: 11px; border-radius: 50%; background: var(--ok); flex: none; }
+.bloco > h3 { margin: 6px 0 0; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.bloco > h3 .bola { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); flex: none; }
 .bloco.nao > h3 .bola { background: var(--no); }
+.bloco.dutref > h3 .bola { background: var(--dut); }
 .mais { justify-self: start; }
 
 /* ficha de um procedimento */
-.linha { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; display: grid; gap: 12px; min-width: 0; scroll-margin-top: 16px; box-shadow: var(--sombra); }
+.linha { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 12px; min-width: 0; box-shadow: var(--sombra); }
 .linha.marcada { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .l-topo { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
-.l-nome { margin: 0; font-family: var(--font-display); font-weight: 700; font-stretch: 88%; font-size: 18px; line-height: 1.28; letter-spacing: .005em; overflow-wrap: anywhere; min-width: 0; }
-.l-id { font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--muted); font-weight: 600; margin-right: 7px; letter-spacing: 0; }
-.btn-copiar { flex: none; border: 1.5px solid var(--line-2); background: var(--surface); border-radius: 8px; padding: 3px 11px; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
-.btn-copiar:hover { color: var(--accent); border-color: var(--accent); }
-.veredito { font-weight: 800; font-size: 16px; display: flex; gap: 8px; align-items: center; }
-.veredito svg { width: 20px; height: 20px; flex: none; }
+.l-nome { margin: 0; font-size: 16.5px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; min-width: 0; }
+.l-id { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--muted); font-weight: 500; margin-right: 8px; }
+.veredito { font-weight: 600; font-size: 15px; display: flex; gap: 8px; align-items: center; }
+.veredito svg { width: 19px; height: 19px; flex: none; }
 .veredito.sim { color: var(--ok); }
 .veredito.nao { color: var(--no); }
-.segs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.seg { display: flex; align-items: center; gap: 7px; border-radius: 8px; padding: 8px 10px; font-size: 14px; font-weight: 700; line-height: 1.2; min-width: 0; border: 1px solid transparent; }
-.seg.sim { background: var(--ok-soft); color: var(--ok); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
-.seg.nao { background: var(--no-soft); color: var(--no); border-color: color-mix(in srgb, var(--no) 25%, transparent); font-weight: 600; }
-.seg.foco { box-shadow: inset 0 0 0 2px currentColor; }
-.seg svg { width: 16px; height: 16px; flex: none; }
-.seg .curto { display: none; font-size: 13px; letter-spacing: .02em; }
-.tags { display: flex; flex-wrap: wrap; gap: 7px; }
-.tag { font-size: 13px; font-weight: 600; border-radius: 6px; padding: 3px 9px; text-decoration: none; border: 1px solid transparent; }
-.tag.dut { background: var(--dut-soft); color: var(--dut); border-color: color-mix(in srgb, var(--dut) 30%, transparent); font-weight: 700; }
-.tag.pac { background: var(--pac-soft); color: var(--pac); border-color: color-mix(in srgb, var(--pac) 30%, transparent); font-weight: 700; }
-.tag.leve { color: var(--muted); border-color: var(--line-2); }
-.tag.rn { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--muted); border-color: var(--line-2); }
-a.tag:hover { text-decoration: underline; }
-.l-class { margin: 0; font-size: 13.5px; color: var(--muted); overflow-wrap: anywhere; }
-.l-nota { margin: 0; font-size: 14px; font-weight: 500; background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 8px 12px; }
-.l-car { margin: 0; font-size: 14.5px; font-weight: 500; color: var(--ink); display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; }
-.l-car .ic { color: var(--accent); }
-.l-car .lnk, .pronta .lnk { font-size: 14px; margin-left: 4px; }
-button.tag.dut { cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
-button.tag.dut:hover { border-color: var(--dut); }
-button.tag.dut[aria-expanded="true"] { border-color: var(--dut); background: color-mix(in srgb, var(--dut-soft) 70%, var(--dut) 12%); }
-.dut-painel { border: 1px solid color-mix(in srgb, var(--dut) 35%, transparent); background: color-mix(in srgb, var(--dut-soft) 40%, var(--surface)); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.segs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.seg { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 11px 4px 7px; font-size: 13.5px; font-weight: 500; line-height: 1.3; }
+.seg.sim { background: var(--ok-soft); color: var(--ok); }
+.seg.nao { background: var(--no-soft); color: var(--no); }
+.seg.foco { box-shadow: 0 0 0 1.5px currentColor; font-weight: 650; }
+.seg svg { width: 15px; height: 15px; flex: none; }
+.seg .curto { display: none; letter-spacing: .02em; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { display: inline-flex; align-items: center; font-size: 12.5px; font-weight: 500; line-height: 1.4; border-radius: 999px; padding: 3px 10px; text-decoration: none; border: 1px solid var(--line); color: var(--muted); background: transparent; }
+.tag.dut { background: var(--dut-soft); color: var(--dut); border-color: transparent; font-weight: 600; }
+.tag.pac { background: var(--pac-soft); color: var(--pac); border-color: transparent; font-weight: 600; }
+.tag.rn { font-variant-numeric: tabular-nums; }
+a.tag:hover { border-color: var(--accent); color: var(--accent); }
+button.tag.dut { cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 600; line-height: 1.4; }
+button.tag.dut:hover { box-shadow: inset 0 0 0 1px var(--dut); }
+button.tag.dut[aria-expanded="true"] { box-shadow: inset 0 0 0 1.5px var(--dut); }
+.l-car { margin: 0; font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
+.l-car b { color: var(--ink); font-weight: 600; }
+.l-car .ic { color: var(--accent); margin-right: 0; }
+.l-car .lnk, .pronta .lnk { font-size: 13.5px; margin-left: 2px; }
+.l-class { margin: 0; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; border-top: 1px solid var(--line); padding-top: 10px; }
+.l-nota { margin: 0; font-size: 14px; font-weight: 500; background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 8px 12px; }
+.dut-painel { background: color-mix(in srgb, var(--dut-soft) 50%, var(--surface)); border: 1px solid color-mix(in srgb, var(--dut) 20%, var(--line)); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
 .dut-cab { font-size: 15px; overflow-wrap: anywhere; }
-.dut-cab b { color: var(--dut); font-family: var(--font-display); font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; display: block; }
-.dut-cab .dut-tit { font-family: var(--font-display); font-stretch: 88%; font-weight: 700; }
+.dut-cab b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; font-weight: 650; color: var(--dut); margin-bottom: 2px; }
+.dut-cab .dut-tit { font-weight: 600; }
 .dut-cab .dut-nota { color: var(--muted); font-size: 13.5px; }
 .dut-texto { font-size: 15px; max-width: 80ch; overflow-wrap: anywhere; }
 .dut-texto p { margin: 0 0 7px; }
 .dut-texto p.n1 { padding-left: 18px; }
 .dut-texto p.n2 { padding-left: 36px; }
-.dut-texto h4 { margin: 12px 0 4px; font-size: 14.5px; font-weight: 700; }
+.dut-texto h4 { margin: 12px 0 4px; font-size: 14.5px; font-weight: 650; }
 .dut-texto del { color: var(--muted); }
-.dut-texto mark, .pronta-dut mark { background: var(--dut-soft); color: inherit; border-radius: 2px; padding: 0; font-weight: 700; }
-.dut-filtro { width: 100%; max-width: 440px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 15px; }
-.dut-filtro:focus { border-color: var(--accent); outline: none; }
+.dut-texto mark, .pronta-dut mark { background: var(--dut-soft); color: inherit; border-radius: 3px; padding: 0 1px; font-weight: 650; }
+.dut-filtro { width: 100%; max-width: 440px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 15px; }
+.dut-filtro:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
 .dut-rodape { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 13.5px; color: var(--muted); }
-.lnk { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 13.5px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 
 /* por que não cobre */
-.porque { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--warn); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; max-width: 86ch; box-shadow: var(--sombra); }
-.porque > h3 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 800; display: flex; gap: 8px; align-items: center; }
-.porque > h3::before { content: "?"; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--warn); color: var(--surface); font-size: 13.5px; font-weight: 800; flex: none; }
+.porque { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 10px; box-shadow: var(--sombra); min-width: 0; }
+.porque > h3 { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -.01em; display: flex; gap: 10px; align-items: center; }
+.porque > h3::before { content: "?"; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--warn-soft); color: var(--warn); font-size: 13.5px; font-weight: 700; flex: none; }
 .porque p { margin: 0; font-size: 15px; }
-.porque .exc { background: var(--warn-soft); border-radius: 8px; padding: 10px 14px; display: grid; gap: 4px; }
+.porque .exc { background: var(--warn-soft); border-radius: 10px; padding: 10px 14px; display: grid; gap: 4px; }
 .porque .exc b { color: var(--warn); font-size: 14.5px; }
 .porque .exc p { font-size: 14.5px; }
-.porque details { border-top: 1px solid var(--line); padding-top: 8px; }
-.porque summary { cursor: pointer; font-weight: 700; font-size: 15px; }
+.porque details { border-top: 1px solid var(--line); padding-top: 10px; }
+.porque summary { cursor: pointer; font-weight: 600; font-size: 15px; }
 .porque ol { margin: 8px 0; padding-left: 22px; display: grid; gap: 5px; font-size: 15px; }
 .porque .mini { font-size: 14px; color: var(--muted); }
 .porque .fontes { font-size: 13.5px; color: var(--muted); }
@@ -176,150 +221,232 @@ button.tag.dut[aria-expanded="true"] { border-color: var(--dut); background: col
 .vazio { color: var(--muted); font-size: 15px; margin: 0; }
 
 /* resposta pronta (sem IA): resumo feito só com as fichas e o texto oficial da DUT */
-.pronta { background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; padding: 16px 18px 18px; display: grid; gap: 12px; min-width: 0; box-shadow: var(--sombra); }
+.pronta { background: var(--surface); border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line)); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 12px; min-width: 0; box-shadow: var(--sombra); }
 .pronta-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-.pronta-rot { font-family: var(--font-display); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; background: var(--accent); color: var(--accent-ink); font-weight: 700; border-radius: 999px; padding: 3px 11px; }
 .pronta-item { display: grid; gap: 7px; min-width: 0; }
-.pronta-item + .pronta-item { border-top: 1px solid var(--line); padding-top: 12px; }
-.pronta-nome { margin: 0; font-family: var(--font-display); font-weight: 700; font-stretch: 88%; font-size: 18px; line-height: 1.28; overflow-wrap: anywhere; }
+.pronta-item + .pronta-item { border-top: 1px solid var(--line); padding-top: 14px; }
+.pronta-nome { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -.01em; line-height: 1.3; overflow-wrap: anywhere; }
 .pronta p { margin: 0; font-size: 15.5px; max-width: 80ch; }
 .pronta .mini { font-size: 14px; color: var(--muted); }
 .pronta .dut-aviso { color: var(--dut); }
 .pronta p .ic { color: var(--accent); }
 .pronta .dut-aviso .ic { color: var(--dut); }
-.pronta-dut { border-left: 4px solid color-mix(in srgb, var(--dut) 45%, transparent); background: color-mix(in srgb, var(--dut-soft) 30%, var(--surface)); border-radius: 0 8px 8px 0; padding: 8px 12px; display: grid; gap: 5px; min-width: 0; overflow-wrap: anywhere; }
+.pronta-dut { border-left: 3px solid color-mix(in srgb, var(--dut) 45%, transparent); background: color-mix(in srgb, var(--dut-soft) 40%, var(--surface)); border-radius: 0 10px 10px 0; padding: 8px 12px; display: grid; gap: 5px; min-width: 0; overflow-wrap: anywhere; }
 .pronta-dut p { font-size: 15px; }
 .pronta-dut p.n1 { padding-left: 16px; }
 .pronta-dut p.n2 { padding-left: 30px; }
-.pronta-dut h4 { margin: 4px 0 0; font-size: 14.5px; font-weight: 700; }
+.pronta-dut h4 { margin: 4px 0 0; font-size: 14.5px; font-weight: 650; }
 
-/* carência, CPT e urgência: botões fixos e cartões (ficam acima da resposta do Claude e das fichas) */
-.gerais { margin-top: 24px; display: grid; gap: 14px; }
-.gerais:empty, .rol:empty { display: none; }
-.geral { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--accent); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; max-width: 86ch; min-width: 0; box-shadow: var(--sombra); }
+/* carência, CPT, urgência e além do Rol: cartões (coluna da direita no computador; em cima no celular) */
+.geral { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 10px; min-width: 0; box-shadow: var(--sombra); }
 .geral-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
-.geral-topo h3 { margin: 0; font-family: var(--font-display); font-size: 19px; font-weight: 800; }
-.selo-g { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 2px 7px; }
+.geral-topo h3 { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -.01em; line-height: 1.3; }
+.selo-g { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 9px; }
 .geral-topo .btn-copiar { margin-left: auto; }
-.geral p { margin: 0; font-size: 15.5px; }
-.geral ul { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 15.5px; }
+.geral p { margin: 0; font-size: 15px; }
+.geral ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
 .geral li.foco { background: var(--accent-soft); border-radius: 8px; padding: 4px 10px; }
 .geral details { border-top: 1px solid var(--line); padding-top: 10px; }
-.geral summary { cursor: pointer; font-weight: 700; font-size: 15px; color: var(--accent); }
+.geral summary { cursor: pointer; font-weight: 600; font-size: 14.5px; color: var(--accent); }
 .geral .lei { font-size: 14.5px; margin: 8px 0 0; overflow-wrap: anywhere; }
-.geral .lei b { font-weight: 700; }
+.geral .lei b { font-weight: 650; }
 .geral .mini { font-size: 14px; color: var(--muted); }
-.geral .fontes { font-size: 13.5px; color: var(--muted); }
-.tab-car { border-collapse: collapse; width: 100%; min-width: 460px; font-size: 14px; margin: 8px 0; }
+.geral .fontes { font-size: 13px; color: var(--muted); }
+.tab-car { border-collapse: collapse; width: 100%; min-width: 460px; font-size: 13.5px; margin: 8px 0; }
 .tab-car th, .tab-car td { border: 1px solid var(--line); padding: 5px 8px; text-align: left; vertical-align: top; }
-.tab-car thead th { background: var(--accent-soft); font-weight: 700; }
+.tab-car thead th { background: var(--surface-2); font-weight: 600; }
 .tab-car td { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.tab-car tbody th { font-weight: 600; }
+.tab-car tbody th { font-weight: 500; }
 /* além do Rol (contrato de alguns produtos): roxo, para não confundir com regra da ANS */
-.chip-x { border-color: var(--pac); background: var(--pac-soft); color: var(--pac); }
-.chip-x:hover, .chip-x[aria-pressed="true"] { background: var(--pac); color: var(--surface); }
-.geral.extra { border-left-color: var(--pac); }
+.geral.extra { background: color-mix(in srgb, var(--pac-soft) 45%, var(--surface)); border-color: color-mix(in srgb, var(--pac) 22%, var(--line)); }
 .geral.extra .selo-g { color: var(--pac); background: var(--pac-soft); }
+.geral.extra summary { color: var(--pac); }
 .geral.extra li b { color: var(--ink); }
+.geral ul.ops { padding-left: 0; list-style: none; gap: 10px; }
+.geral ul.ops > li + li { border-top: 1px solid color-mix(in srgb, var(--pac) 14%, var(--line)); padding-top: 10px; }
 .geral .op { display: grid; gap: 2px; }
 .geral .ref-x { color: var(--muted); font-size: 13.5px; }
 .geral .lista-x { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
-.geral .lista-x > li { border-top: 1px solid var(--line); padding-top: 9px; }
+.geral .lista-x > li { border-top: 1px solid color-mix(in srgb, var(--pac) 14%, var(--line)); padding-top: 10px; }
 .geral .lista-x > li:first-child { border-top: 0; padding-top: 0; }
-.geral .lista-x h4 { margin: 0 0 3px; font-family: var(--font-display); font-size: 16px; font-weight: 800; }
+.geral .lista-x h4 { margin: 0 0 3px; font-size: 15.5px; font-weight: 650; }
 
-footer { margin: 44px 0 0; border-top: 1px solid var(--line); }
-footer .wrap { padding-block: 20px 30px; display: grid; gap: 12px; font-size: 14px; color: var(--muted); }
-.legenda { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 5px 18px; margin: 0; }
-.legenda dt { font-family: var(--font-display); font-weight: 800; color: var(--ink); display: inline; letter-spacing: .02em; }
-.legenda dd { display: inline; margin: 0 0 0 6px; }
+/* rodapé */
+.rodape { margin-top: 64px; background: var(--surface); border-top: 1px solid var(--line); }
+.rodape-in { max-width: 1120px; margin: 0 auto; padding: 36px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 28px; font-size: 14px; color: var(--muted); }
+.rodape h2 { margin: 0 0 10px; font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; font-weight: 650; color: var(--ink); }
+.rodape p { margin: 0 0 10px; max-width: 70ch; }
+.rodape-marca { display: flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 650; font-size: 16px; }
+.legenda { display: grid; gap: 3px; margin: 14px 0 0; }
 .legenda div { margin: 0; }
-footer p { margin: 0; max-width: 90ch; }
+.legenda dt { display: inline; font-weight: 650; color: var(--ink); }
+.legenda dd { display: inline; margin: 0 0 0 6px; }
 
+/* computador e tablet: a barra do topo acompanha a rolagem, com a busca logo abaixo */
+@media (min-width: 720px) {
+  .topo { position: sticky; top: 0; }
+  .busca { top: var(--topo-h); }
+}
+@media (min-width: 860px) {
+  .rodape-in { grid-template-columns: 1.1fr 1.6fr 1fr; gap: 40px; }
+}
+@media (min-width: 1000px) {
+  .layout { grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr); gap: 28px; }
+  .col-main { grid-column: 1; grid-row: 1; }
+  .col-lado { grid-column: 2; grid-row: 1; }
+  .atalhos { display: grid; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 8px; box-shadow: var(--sombra); }
+  .atalhos .rot { padding: 8px 10px 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .07em; font-weight: 650; }
+  .atalho { width: 100%; border: 0; border-radius: 10px; padding: 9px 10px; font-size: 15px; white-space: normal; }
+  .atalho .seta { display: inline; margin-left: auto; color: var(--faint); }
+  .atalho:hover { background: var(--surface-2); color: var(--ink); }
+  .atalho.x:hover { color: var(--pac); }
+  .atalho[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+  .atalho.x[aria-pressed="true"] { background: var(--pac-soft); color: var(--pac); }
+  .atalho[aria-pressed="true"] .seta { color: currentColor; }
+}
+/* celular */
+@media (max-width: 719px) {
+  :root { --busca-h: 72px; --fixo: var(--busca-h); }
+  .topo-in { height: 54px; }
+  .menu, .tema-rot { display: none; }
+  .tema { margin-left: auto; padding: 8px; }
+  .abertura { text-align: left; padding: 22px 16px 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+  .abertura h1 { font-size: 27px; }
+  .fonte { margin: 6px 0 0; font-size: 13.5px; }
+  .busca { padding-top: 8px; padding-bottom: 8px; }
+  form { padding: 5px 5px 5px 12px; border-radius: 14px; gap: 6px; }
+  form input { font-size: 16.5px; padding: 9px 2px; }
+  .lupa { width: 18px; height: 18px; }
+  .btn-perguntar { padding: 0 15px; min-height: 44px; font-size: 15px; }
+  .layout { margin-top: 14px; gap: 16px; }
+  .dicas, .atalhos { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; margin-inline: -16px; padding: 2px 16px 4px; }
+  .dicas::-webkit-scrollbar, .atalhos::-webkit-scrollbar { display: none; }
+  .dicas .chip, .dicas .rot { flex: none; }
+  .atalhos .rot { display: none; }
+  .atalho .lg { display: none; }
+}
 @media (max-width: 640px) {
   body { font-size: 15.5px; }
-  .faixa .wrap { padding-block: 18px 58px; }
-  .fonte { font-size: 14px; }
-  .seg { justify-content: center; padding: 7px 2px; gap: 3px; font-size: 13px; }
+  .seg { padding: 4px 10px 4px 7px; font-size: 13px; }
   .seg .longo { display: none; }
   .seg .curto { display: inline; }
   .seg svg { width: 14px; height: 14px; }
-  .linha { padding: 14px; }
-  .l-nome, .pronta-nome { font-size: 17px; }
-  .rol-cab h2 { font-size: 21px; }
-  .btn-perguntar { padding: 0 14px; }
-  form input { font-size: 17px; padding: 9px 6px; }
-  .dicas { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
-  .dicas .chip, .dicas .rot { flex: none; white-space: nowrap; }
+  .linha, .pronta, .ia, .geral, .porque { padding: 16px; }
+  .l-nome { font-size: 16px; }
+  .pronta-nome { font-size: 17px; }
+  .rol-cab h2 { font-size: 19.5px; }
 }
 </style>
+<script>try { var t = localStorage.getItem("rol.tema"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
 <meta name="description" content="Consulte o Rol de Procedimentos da ANS: veja se um exame, cirurgia ou tratamento tem cobertura obrigatória, em qual tipo de plano e com quais regras (DUT).">
 <meta property="og:title" content="Pergunte ao Rol ANS">
 <meta property="og:description" content="Consulte o Rol de Procedimentos da ANS: veja se um exame, cirurgia ou tratamento tem cobertura obrigatória, em qual tipo de plano e com quais regras (DUT).">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230c6475'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e56'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1416">
 <style>body { margin: 0; }</style>
 </head>
 <body>
-<header class="faixa">
-  <div class="wrap">
-    <span class="selo">Ferramenta de consulta · fonte: Rol da ANS</span>
-    <h1>Pergunte ao Rol</h1>
-    <p class="fonte" id="fonte">Anexo I e Anexo II (DUT) da RN 465/2021</p>
+<header class="topo" id="topo">
+  <div class="topo-in">
+    <a class="marca" href="#inicio" data-ir="inicio">
+      <span class="marca-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.4l2.7 2.7 5.7-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span>Pergunte ao Rol</span>
+    </a>
+    <nav class="menu" id="menu" aria-label="Atalhos da página">
+      <a href="#inicio" data-ir="consultar" aria-current="page">Consultar</a>
+      <button type="button" data-q="carência">Carência</button>
+      <button type="button" data-q="coberturas além do rol">Além do Rol</button>
+      <a href="#fontes" data-ir="fontes">Fontes</a>
+    </nav>
+    <button type="button" class="tema" id="tema" aria-label="Mudar para o tema escuro">
+      <svg class="lua" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
+      <svg class="sol" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.5 1.5M17.1 17.1l1.5 1.5M5.4 18.6l1.5-1.5M17.1 6.9l1.5-1.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span class="tema-rot">Escuro</span>
+    </button>
   </div>
 </header>
 
-<main class="wrap">
-  <section class="pergunta" aria-label="Pergunta">
-    <form id="form" autocomplete="off">
+<main id="inicio">
+  <section class="abertura" aria-labelledby="titulo">
+    <h1 id="titulo">O que o plano cobre?</h1>
+    <p class="fonte" id="fonte">Rol da ANS: Anexo I e Anexo II (DUT) da RN 465/2021</p>
+  </section>
+
+  <div class="busca" id="busca">
+    <form id="form" autocomplete="off" role="search">
+      <svg class="lupa" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.2 4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <label for="q" class="sr">Sua pergunta sobre o Rol</label>
       <input id="q" name="q" type="search" placeholder="Ex.: cobre DIU? qual DIU?" enterkeyhint="search">
       <button class="btn-perguntar" type="submit">Perguntar</button>
     </form>
+  </div>
+
+  <div class="sob-busca">
     <div class="dicas" id="dicas"></div>
-    <div class="atalhos" id="atalhos" aria-label="Regras gerais que não estão no Rol">
-      <span class="rot">Regras gerais (fora do Rol):</span>
-      <button type="button" class="chip chip-g" data-q="carência">Carência</button>
-      <button type="button" class="chip chip-g" data-q="doença preexistente (CPT)">Doença preexistente (CPT)</button>
-      <button type="button" class="chip chip-g" data-q="urgência e emergência">Urgência e emergência</button>
-      <button type="button" class="chip chip-g chip-x" data-q="coberturas além do rol">Além do Rol (operadoras)</button>
-    </div>
     <p class="aviso-ia" id="aviso-ia" hidden></p>
-  </section>
+  </div>
 
-  <section class="gerais" id="gerais" aria-live="polite"></section>
+  <div class="layout" id="layout">
+    <aside class="col-lado" id="col-lado" aria-label="Regras gerais e coberturas além do Rol">
+      <div class="atalhos" id="atalhos" aria-label="Regras gerais que não estão no Rol">
+        <span class="rot">Regras gerais · fora do Rol</span>
+        <button type="button" class="atalho" data-q="carência"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 7.6V12l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Carência</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" class="atalho" data-q="doença preexistente (CPT)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.6s-7.2-4.3-7.2-9.8A4.1 4.1 0 0 1 12 7.2a4.1 4.1 0 0 1 7.2 2.6c0 5.5-7.2 9.8-7.2 9.8z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg><span><span class="lg">Doença preexistente (</span>CPT<span class="lg">)</span></span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" class="atalho" data-q="urgência e emergência"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12.5h4.2l2.4-5.8 4.6 11.2 2.4-5.4H21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Urgência<span class="lg"> e emergência</span></span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" class="atalho x" data-q="coberturas além do rol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6 3.6 8l8.4 4.4L20.4 8z M3.6 12.2l8.4 4.4 8.4-4.4 M3.6 16.2l8.4 4.4 8.4-4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Além do Rol<span class="lg"> (operadoras)</span></span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <section class="gerais" id="gerais" aria-live="polite"></section>
+    </aside>
 
-  <section class="ia" id="ia" hidden aria-live="polite">
-    <div class="ia-topo">
-      <span class="ia-rot">Resposta do Claude</span>
-      <span class="ia-q" id="ia-q"></span>
-      <span class="ia-acoes">
-        <button class="btn-sec" id="ia-parar" type="button" hidden>Parar</button>
-        <button class="btn-sec" id="ia-copiar" type="button" hidden>Copiar resposta</button>
-      </span>
+    <div class="col-main" id="col-main">
+      <section class="ia" id="ia" hidden aria-live="polite">
+        <div class="ia-topo">
+          <span class="ia-rot">Resposta do Claude</span>
+          <span class="ia-q" id="ia-q"></span>
+          <span class="ia-acoes">
+            <button class="btn-sec" id="ia-parar" type="button" hidden>Parar</button>
+            <button class="btn-sec" id="ia-copiar" type="button" hidden>Copiar resposta</button>
+          </span>
+        </div>
+        <div class="ia-status" id="ia-status"></div>
+        <div class="ia-texto" id="ia-texto"></div>
+        <div class="ia-citadas" id="ia-citadas"></div>
+      </section>
+
+      <section class="rol" id="rol" aria-live="polite"></section>
     </div>
-    <div class="ia-status" id="ia-status"></div>
-    <div class="ia-texto" id="ia-texto"></div>
-    <div class="ia-citadas" id="ia-citadas"></div>
-  </section>
-
-  <section class="rol" id="rol" aria-live="polite"></section>
+  </div>
 </main>
 
-<footer>
-  <div class="wrap">
-    <dl class="legenda">
-      <div><dt>AMB</dt><dd>Segmentação ambulatorial</dd></div>
-      <div><dt>HCO</dt><dd>Hospitalar com obstetrícia</dd></div>
-      <div><dt>HSO</dt><dd>Hospitalar sem obstetrícia</dd></div>
-      <div><dt>REF</dt><dd>Plano referência</dd></div>
-      <div><dt>OD</dt><dd>Segmentação odontológica</dd></div>
-      <div><dt>PAC</dt><dd>Procedimento de alta complexidade</dd></div>
-      <div><dt>DUT</dt><dd>Diretriz de utilização (Anexo II)</dd></div>
-    </dl>
-    <p id="rodape-fonte"></p>
-    <p id="rodape-fonte2"></p>
-    <p id="rodape-geral">Carência, doença preexistente (CPT) e urgência não estão no Rol: quando a pergunta é sobre isso, a página mostra o texto oficial da Lei 9.656/98 e das RN 557 e 558 de 2022 da ANS.</p>
+<footer class="rodape" id="fontes">
+  <div class="rodape-in">
+    <div>
+      <p class="rodape-marca"><span class="marca-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.4l2.7 2.7 5.7-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Pergunte ao Rol</p>
+      <p>Consulta ao Rol de Procedimentos e Eventos em Saúde da ANS: se um exame, cirurgia ou tratamento tem cobertura obrigatória, em qual tipo de plano e com quais regras.</p>
+      <dl class="legenda">
+        <div><dt>AMB</dt><dd>Segmentação ambulatorial</dd></div>
+        <div><dt>HCO</dt><dd>Hospitalar com obstetrícia</dd></div>
+        <div><dt>HSO</dt><dd>Hospitalar sem obstetrícia</dd></div>
+        <div><dt>REF</dt><dd>Plano referência</dd></div>
+        <div><dt>OD</dt><dd>Segmentação odontológica</dd></div>
+        <div><dt>PAC</dt><dd>Procedimento de alta complexidade</dd></div>
+        <div><dt>DUT</dt><dd>Diretriz de utilização (Anexo II)</dd></div>
+      </dl>
+    </div>
+    <div>
+      <h2>Fontes oficiais</h2>
+      <p id="rodape-fonte"></p>
+      <p id="rodape-fonte2"></p>
+      <p id="rodape-geral">Carência, doença preexistente (CPT) e urgência não estão no Rol: quando a pergunta é sobre isso, a página mostra o texto oficial da Lei 9.656/98 e das RN 557 e 558 de 2022 da ANS.</p>
+      <p id="rodape-extra">Além do Rol: coberturas que alguns produtos dão por contrato, tiradas dos documentos oficiais publicados pelas operadoras (Amil, Bradesco Saúde, SulAmérica e Unimed Curitiba).</p>
+    </div>
+    <div>
+      <h2>Aviso</h2>
+      <p>Não é uma publicação oficial da ANS nem das operadoras. Confira sempre a norma e o contrato do cliente.</p>
+      <p id="rodape-data"></p>
+    </div>
   </div>
 </footer>
 
@@ -1015,8 +1142,9 @@ footer p { margin: 0; max-width: 90ch; }
 
   const F2 = DADOS.fonte2;
   const NDUT = Object.keys(DADOS.duts || {}).length;
-  $("#fonte").textContent = `Anexo I da RN 465/2021 · atualizado até a RN ${F.ultima_rn} (vigente desde ${F.vigencia}) · ${nfmt(IX.rows.length)} procedimentos` + (NDUT ? ` · regras das DUTs (Anexo II)` : "");
-  $("#rodape-fonte").textContent = `Fonte: ${F.arquivo} (${F.paginas} páginas), lido em ${F.gerado_em.split("-").reverse().join("/")}. A tabela foi lida de dois jeitos independentes e as ${nfmt(IX.rows.length)} linhas bateram nos dois.`;
+  $("#fonte").textContent = `Rol da ANS atualizado até a RN ${F.ultima_rn} · ${nfmt(IX.rows.length)} procedimentos` + (NDUT ? " · regras das DUTs" : "");
+  $("#rodape-fonte").textContent = `Anexo I da RN 465/2021, atualizado até a RN ${F.ultima_rn} (vigente desde ${F.vigencia}): ${F.arquivo} (${F.paginas} páginas). A tabela foi lida de dois jeitos independentes e as ${nfmt(IX.rows.length)} linhas bateram nos dois.`;
+  $("#rodape-data").textContent = `Atualizado em ${F.gerado_em.split("-").reverse().join("/")} (Rol até a RN ${F.ultima_rn}).`;
   if (F2) $("#rodape-fonte2").textContent = `Regras das DUTs: ${F2.arquivo} (${F2.paginas} páginas, site da ANS; sumário atualizado até a RN ${F2.ultima_rn}). ${NDUT} diretrizes; o que está riscado no PDF (revogado) aparece separado e não entra na resposta.`;
 
   const ICON_SIM = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.2" fill="currentColor" opacity=".16"/><path d="M4.6 8.3l2.2 2.2 4.6-4.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -1404,7 +1532,7 @@ footer p { margin: 0; max-width: 90ch; }
     textosExtra[it.id] = txt.join("\n");
     return `<section class="geral extra" aria-label="Além do Rol: ${esc(it.nome)}"><div class="geral-topo"><h3>${esc(it.nome)}</h3><span class="selo-g">além do Rol · depende do plano</span>` +
       `<button type="button" class="btn-copiar" data-copiar-extra="${esc(it.id)}">Copiar</button></div>` +
-      `<p>${esc(it.resumo)} Alguns planos cobrem${operadora ? " (filtrado: " + esc(operadora) + ")" : ""}:</p><ul>${linhas.join("")}</ul>` +
+      `<p>${esc(it.resumo)} Alguns planos cobrem${operadora ? " (filtrado: " + esc(operadora) + ")" : ""}:</p><ul class="ops">${linhas.join("")}</ul>` +
       (oficial.length ? `<details><summary>Texto dos documentos oficiais</summary>${oficial.join("")}</details>` : "") +
       `<p class="fontes">${esc(X.aviso)} Consultado em ${consultado}.</p></section>`;
   }
@@ -1464,6 +1592,16 @@ footer p { margin: 0; max-width: 90ch; }
       ${lista.length > n ? `<button type="button" class="btn-sec mais" data-mais="${chave}" data-mostrando="${n}">Mostrar mais (${nfmt(lista.length - n)})</button>` : ""}
     </div>`;
   }
+  // cartões de carência / CPT / urgência / além do Rol (#gerais): no computador ficam na coluna da direita;
+  // quando a pergunta é só sobre regra, vão para a coluna principal (que senão ficaria vazia). No celular, ficam em cima.
+  const larga = matchMedia("(min-width: 1000px)");
+  function posicionaGerais() {
+    const g = $("#gerais");
+    const destino = larga.matches && ultimo && ultimo.modo === "regras" ? $("#col-main") : $("#col-lado");
+    if (g.parentNode === destino) return;
+    if (destino.id === "col-main") destino.prepend(g); else destino.append(g);
+  }
+  if (larga.addEventListener) larga.addEventListener("change", posicionaGerais);
   let ultimoExemplo = false;
   function renderLocal(res, exemplo) {
     ultimo = res;
@@ -1526,7 +1664,8 @@ footer p { margin: 0; max-width: 90ch; }
     const gerais = cartoesGerais(res, lista) + cartoesExtra(res);
     $("#gerais").innerHTML = res.modo === "regras" ? cab + gerais : gerais;
     rol.innerHTML = res.modo === "regras" ? "" : `${cab}${htmlPronta}${notas}${cartaoPorque(res)}${corpo}`;
-    document.querySelectorAll("#atalhos [data-q]").forEach((b) => b.setAttribute("aria-pressed", res.modo === "regras" && b.dataset.q === p.texto ? "true" : "false"));
+    document.querySelectorAll("#atalhos [data-q], #menu [data-q]").forEach((b) => b.setAttribute("aria-pressed", res.modo === "regras" && b.dataset.q === p.texto ? "true" : "false"));
+    posicionaGerais();
     abrePendentes(rol);
   }
   function maisResultados(btn) {
@@ -1802,12 +1941,70 @@ Pergunta do corretor: ${pergunta}`;
     campo.value = b.dataset.q;
     $("#form").requestSubmit();
   });
+  const suave = () => (matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+  // depois de um atalho: se o começo das respostas ficou fora da tela, rola até ele
+  function mostraResultado() {
+    const alvo = $("#layout"), r = alvo.getBoundingClientRect();
+    if (r.top < 0 || r.top > innerHeight * 0.6) alvo.scrollIntoView({ behavior: suave(), block: "start" });
+  }
   $("#atalhos").addEventListener("click", (ev) => {
     const b = ev.target.closest("[data-q]");
     if (!b) return;
     campo.value = b.dataset.q;
     $("#form").requestSubmit();
+    mostraResultado();
   });
+  // barra do topo: Carência e Além do Rol perguntam; Consultar volta para a busca; Fontes desce até o rodapé
+  $("#menu").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-q]");
+    if (!b) return;
+    campo.value = b.dataset.q;
+    $("#form").requestSubmit();
+    mostraResultado();
+  });
+  document.querySelectorAll("[data-ir]").forEach((a) => a.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (a.dataset.ir === "fontes") { $("#fontes").scrollIntoView({ behavior: suave(), block: "start" }); return; }
+    window.scrollTo({ top: 0, behavior: suave() });
+    if (a.dataset.ir === "consultar") campo.focus({ preventScroll: true });
+  }));
+
+  // busca colada no topo ao rolar: ganha fundo e uma linha embaixo
+  const busca = $("#busca");
+  let topoBusca = 0;
+  function confereBusca() { busca.classList.toggle("colada", window.scrollY > 0 && busca.getBoundingClientRect().top <= topoBusca + 0.5); }
+  function medeBusca() { topoBusca = parseFloat(getComputedStyle(busca).top) || 0; confereBusca(); }
+  addEventListener("scroll", confereBusca, { passive: true });
+  addEventListener("resize", medeBusca);
+  medeBusca();
+
+  // ---------- claro / escuro: começa igual ao aparelho; o botão troca e a página lembra a escolha (só neste navegador) ----------
+  const raiz = document.documentElement;
+  const escuroNoAparelho = matchMedia("(prefers-color-scheme: dark)");
+  const btTema = $("#tema");
+  function temaSalvo() { try { const t = localStorage.getItem("rol.tema"); return t === "dark" || t === "light" ? t : null; } catch (e) { return null; } }
+  function estaEscuro() { const t = raiz.getAttribute("data-theme"); return t === "dark" || t === "light" ? t === "dark" : escuroNoAparelho.matches; }
+  function mostraTema() {
+    const escuro = estaEscuro();
+    btTema.dataset.escuro = escuro ? "1" : "";
+    btTema.querySelector(".tema-rot").textContent = escuro ? "Claro" : "Escuro";
+    btTema.setAttribute("aria-label", escuro ? "Mudar para o tema claro" : "Mudar para o tema escuro");
+  }
+  btTema.addEventListener("click", () => {
+    const novo = estaEscuro() ? "light" : "dark";
+    try { localStorage.setItem("rol.tema", novo); } catch (e) { /* sem memória: troca só agora */ }
+    raiz.setAttribute("data-theme", novo);
+    mostraTema();
+  });
+  if (escuroNoAparelho.addEventListener) escuroNoAparelho.addEventListener("change", mostraTema);
+  // se a página de fora (claude.ai) trocar o tema depois, a escolha feita aqui continua valendo
+  new MutationObserver(() => {
+    const t = temaSalvo();
+    if (t && raiz.getAttribute("data-theme") !== t) raiz.setAttribute("data-theme", t);
+    mostraTema();
+  }).observe(raiz, { attributes: true, attributeFilter: ["data-theme"] });
+  if (temaSalvo() && raiz.getAttribute("data-theme") !== temaSalvo()) raiz.setAttribute("data-theme", temaSalvo());
+  mostraTema();
   ia.parar.addEventListener("click", () => { if (ctl) ctl.abort(); });
   async function copiar(texto, botao) {
     const antes = botao.textContent;

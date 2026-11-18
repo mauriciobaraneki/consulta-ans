@@ -127,6 +127,8 @@ form:focus-within { border-color: var(--accent); }
 a.tag:hover { text-decoration: underline; }
 .l-class { margin: 0; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
 .l-nota { margin: 0; font-size: 13px; background: var(--warn-soft); color: var(--warn); border-radius: 6px; padding: 6px 10px; }
+.l-car { margin: 0; font-size: 13px; color: var(--ink); }
+.l-car .lnk, .pronta .lnk { font-size: 13px; margin-left: 4px; }
 button.tag.dut { cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 500; }
 button.tag.dut:hover { border-color: var(--dut); }
 button.tag.dut[aria-expanded="true"] { border-color: var(--dut); }
@@ -698,6 +700,8 @@ footer p { margin: 0; max-width: 90ch; }
     opc = opc || {};
     const fuzzy = new Map();
     for (const g of grupos) for (const a of g.alts) for (const t of a.toks) {
+      // frase com sinônimo ("parto normal" -> parto por via vaginal): as palavras dela não precisam de correção ("normal" não é "anormal")
+      if (a === g.alts[0] && g.alts.length > 1 && g.chave.includes(" ")) continue;
       if (fuzzy.has(t) || indice.vocab.some((v) => v === t || (t.length >= 5 && v.startsWith(t)))) continue;
       const pz = parecidas(indice, t);
       if (pz) fuzzy.set(t, pz);
@@ -910,6 +914,16 @@ footer p { margin: 0; max-width: 90ch; }
     return out.length <= (max || 6) ? out : [];
   }
 
+  // carência máxima que a lei permite para o procedimento (Lei 9.656/98, art. 12, V). Não é do Rol; o contrato pode ter menos.
+  function carenciaDe(linha) {
+    const n = baixa(linha.nome);
+    if (/^parto\b|^assistencia ao trabalho de parto\b/.test(n))
+      return { tipo: "parto", curto: "300 dias (parto a termo) · 24 h se for urgência", texto: "300 dias para parto a termo; se for complicação na gravidez (urgência), 24 horas" };
+    if (/\burgencia\b|\bemergencia\b/.test(n))
+      return { tipo: "urgencia", curto: "24 horas (urgência)", texto: "24 horas (urgência e emergência)" };
+    return { tipo: "geral", curto: "180 dias · 24 h se for urgência ou emergência", texto: "180 dias; em urgência ou emergência, 24 horas" };
+  }
+
   // ---------- textos ----------
   function segmentosDe(linha) {
     const sim = [], nao = [];
@@ -930,6 +944,7 @@ footer p { margin: 0; max-width: 90ch; }
       `PAC: ${linha.flags & BIT.PAC ? "sim" : "não"}`,
       `DUT: ${dutTexto(linha)}`,
       `RN (atualização): ${linha.rn.length ? linha.rn.join(", ") + " — vigência " + linha.vig.join(", ") : "nenhuma registrada (está desde a RN 465/2021)"}`,
+      `Carência máxima pela lei (Lei 9.656/98, art. 12, V): ${carenciaDe(linha).texto}`,
       `subgrupo: ${linha.sub}`, `grupo: ${linha.grp}`, `pág. ${linha.pag} do PDF`,
     ];
     if (linha.nota) partes.push("observação: " + linha.nota);
@@ -940,10 +955,11 @@ footer p { margin: 0; max-width: 90ch; }
     let t = `*${linha.nome}*\nCobertura obrigatória pelo Rol da ANS nos planos: ${sim.join(", ")}.`;
     if (linha.flags & BIT.PAC) t += "\nÉ procedimento de alta complexidade (PAC).";
     if (linha.temDut) t += `\nTem diretriz de utilização${linha.dut ? " (DUT nº " + linha.dut + ")" : ""}: a cobertura é obrigatória quando o paciente se enquadra nos critérios da diretriz.`;
+    t += `\nCarência máxima pela lei: ${carenciaDe(linha).texto} (Lei 9.656/98, art. 12, V). Empresarial com 30 ou mais beneficiários, entrando em até 30 dias: sem carência (RN 557/2022, art. 6º).`;
     return t;
   }
 
-  const motor = { BIT, SEGS, NOME_SEG, criaIndice, lePergunta, busca, buscaGrupos, cobre, segmentosDe, dutTexto, dutDe, trechoDut, linhasDut, linhasDutTodas, linhaParaIA, linhaParaWhats, baixa, radical, tokensConsulta, ultimaVig, SINONIMOS, ESPECIALIDADES, TEMAS, EXCLUSOES, TOPICOS };
+  const motor = { BIT, SEGS, NOME_SEG, criaIndice, lePergunta, busca, buscaGrupos, cobre, segmentosDe, dutTexto, dutDe, trechoDut, linhasDut, linhasDutTodas, carenciaDe, linhaParaIA, linhaParaWhats, baixa, radical, tokensConsulta, ultimaVig, SINONIMOS, ESPECIALIDADES, TEMAS, EXCLUSOES, TOPICOS };
   if (typeof module !== "undefined" && module.exports) module.exports = motor;
   else raiz.MotorRol = motor;
 })(typeof window !== "undefined" ? window : globalThis);
@@ -1086,6 +1102,7 @@ footer p { margin: 0; max-width: 90ch; }
       ${veredito(l, seg)}
       <ul class="segs" aria-label="Cobertura por tipo de plano">${segs}</ul>
       <div class="tags">${tags.join("")}</div>
+      <p class="l-car" title="Prazo máximo que a Lei 9.656/98 (art. 12, V) permite. O contrato pode ter carência menor; empresarial com 30 ou mais beneficiários, entrando em até 30 dias, não tem carência (RN 557/2022, art. 6º).">⏳ Carência máxima pela lei: ${esc(M.carenciaDe(l).curto)} <button type="button" class="lnk" data-carencia>ver regra</button></p>
       ${temTexto ? `<div class="dut-painel" data-num="${l.dut}" data-abrir="${abrir ? "1" : ""}" data-filtro="${esc(filtroDut || "")}" hidden></div>` : ""}
       <p class="l-class">${esc(l.sub)} › ${esc(l.grp)} · pág. ${l.pag} do PDF</p>
       ${l.nota ? `<p class="l-nota">${esc(l.nota)}</p>` : ""}
@@ -1196,8 +1213,12 @@ footer p { margin: 0; max-width: 90ch; }
           (linhas.length ? (parcial ? ` Trecho sobre “${pal.join(", ")}”:` : "") + "\n" + linhas.map((x) => "   ".repeat(x.nivel) + x.texto.replace(/ \| /g, " · ")).join("\n") : ""));
       }
     }
+    // carência do procedimento: o prazo máximo da lei que vale para ele (parto a termo, urgência ou demais casos)
+    const car = M.carenciaDe(l);
+    h.push(`<p>⏳ <b>Carência máxima pela lei:</b> ${esc(car.texto)}.${compacto ? "" : ' <span class="mini">PME com 30 ou mais beneficiários, entrando em até 30 dias: sem carência.</span>'} <button type="button" class="lnk" data-carencia>ver regra</button></p>`);
+    t.push(`Carência máxima pela lei: ${car.texto} (Lei 9.656/98, art. 12, V).` + (compacto ? "" : " Empresarial com 30 ou mais beneficiários, entrando em até 30 dias: sem carência (RN 557/2022, art. 6º)."));
     if (l.nota && !compacto) { h.push(`<p class="mini">${esc(l.nota)}</p>`); t.push(l.nota); }
-    return { html: `<div class="pronta-item">${h.join("")}</div>`, txt: t.join("\n") };
+    return { html: `<div class="pronta-item" data-id="${l.id}">${h.join("")}</div>`, txt: t.join("\n") };
   }
   function respostaPronta(res) {
     textoPronta = "";
@@ -1207,7 +1228,8 @@ footer p { margin: 0; max-width: 90ch; }
     let itens = [];
     if (res.modo === "especialidade" && res.exatos[0]) {
       const it = itemPronta(res.exatos[0], p);
-      it.html = it.html.replace('<div class="pronta-item">', `<div class="pronta-item"><p class="mini">${esc(p.especialidade.nome)} é especialidade médica: a consulta com especialista entra como consulta médica, em número ilimitado (RN 465/2021, art. 18, I).</p>`);
+      const nota = `<p class="mini">${esc(p.especialidade.nome)} é especialidade médica: a consulta com especialista entra como consulta médica, em número ilimitado (RN 465/2021, art. 18, I).</p>`;
+      it.html = it.html.replace(/^<div class="pronta-item"[^>]*>/, (m) => m + nota);
       it.txt = `${p.especialidade.nome}: a consulta com especialista entra como consulta médica, em número ilimitado (RN 465/2021, art. 18, I).\n` + it.txt;
       itens = [it];
     } else if (res.modo === "busca" && res.exatos.length > 3) {
@@ -1230,12 +1252,13 @@ footer p { margin: 0; max-width: 90ch; }
 
   // ---------- carência, CPT e urgência (fora do Rol): Lei 9.656/98, RN 557/2022 e RN 558/2022 ----------
   const textosGerais = {};
-  function cartoesGerais(res, lista) {
+  // focoCar ("parto" | "urgencia" | "geral"): veio do "ver regra" de um procedimento, e o prazo dele fica em destaque
+  function cartoesGerais(res, lista, focoCar) {
     const C = DADOS.regras && DADOS.regras.carencia_cpt;
     const p = res.pergunta;
     if (!C || !p.topicos || !p.topicos.length) return "";
     const b = M.baixa(p.texto);
-    const parto = /\bpartos?\b|\bgravide[zs]\b|\bgravida\b|\bgestante|\bgestac|\bobstetric/.test(b);
+    const parto = focoCar ? focoCar === "parto" : /\bpartos?\b|\bgravide[zs]\b|\bgravida\b|\bgestante|\bgestac|\bobstetric/.test(b);
     const tipo = p.tipoContrato;
     const temProc = lista.length > 0;
     const li = (foco, html) => `<li${foco ? ' class="foco"' : ""}>${html}</li>`;
@@ -1251,9 +1274,9 @@ footer p { margin: 0; max-width: 90ch; }
     const fonte = (url, nome) => `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(nome)}</a>`;
     const out = [];
     if (p.topicos.includes("carencia")) {
-      const urg = p.topicos.includes("urgencia");
+      const urg = focoCar ? focoCar === "urgencia" : p.topicos.includes("urgencia");
       const corpo = `<p>Prazos máximos de carência (Lei 9.656/98, art. 12, V):</p><ul>` +
-        li(urg, "<b>24 horas</b>: urgência e emergência") + li(parto, "<b>300 dias</b>: parto a termo") + li(temProc && !parto && !urg, "<b>180 dias</b>: demais casos") + "</ul>" +
+        li(urg, "<b>24 horas</b>: urgência e emergência") + li(parto, "<b>300 dias</b>: parto a termo") + li(focoCar ? focoCar === "geral" : temProc && !parto && !urg, "<b>180 dias</b>: demais casos") + "</ul>" +
         `<p>Depende do tipo de contrato:</p><ul>` +
         li(tipo === "empresarial", "<b>Empresarial (PME) com 30 beneficiários ou mais:</b> sem carência, se o beneficiário pedir a entrada em até 30 dias do contrato ou do vínculo com a empresa (RN 557/2022, art. 6º). Com menos de 30, esse artigo não vale: pode ter carência, até os prazos máximos acima.") +
         li(tipo === "adesao", "<b>Coletivo por adesão:</b> sem carência para quem entra em até 30 dias da assinatura do contrato coletivo. Depois, a cada aniversário do contrato, também entra sem carência quem se vinculou à entidade depois desse prazo e pede a adesão em até 30 dias da data de aniversário (RN 557/2022, art. 17).") +
@@ -1487,6 +1510,7 @@ Como ler cada linha:
 - PAC = procedimento de alta complexidade.
 - DUT = diretriz de utilização (Anexo II). Com DUT, a cobertura só é obrigatória quando o paciente cumpre os critérios daquela DUT. O texto vigente de cada DUT está disponível pela ferramenta ler_dut (os trechos revogados já foram retirados). Para DUT longa, passe "procurar" com o assunto (ex.: nome da doença).
 - RN (atualização) = norma que incluiu ou alterou o item, com a vigência.
+- Carência máxima pela lei = o prazo máximo de carência que a Lei 9.656/98 (art. 12, V) permite para esse procedimento: 300 dias para parto a termo, 24 horas para urgência e emergência, 180 dias nos demais casos. Não é do Rol, é da lei.
 
 Regras gerais da ANS que você pode usar (diga que é regra geral, não linha da tabela):
 - O Rol lista procedimentos, não especialidades. O plano ambulatorial cobre "consultas médicas em número ilimitado em clínicas básicas e especializadas (especialidades médicas)... reconhecidas pelo CFM" (RN 465/2021, art. 18, I); as áreas de atuação do CFM não contam como especialidade (art. 18, § 2º).
@@ -1510,6 +1534,7 @@ Como responder:
    Não diga que a ANS já analisou, negou ou está analisando o procedimento: isso não está nestas fontes.
 8. Se a pergunta for "por que não cobre" e o procedimento ESTIVER no Rol, mostre o motivo pela linha (tipo de plano sem cobertura obrigatória) ou pela DUT (critério que precisa ser cumprido).
 9. Português do Brasil, simples. No máximo 12 tópicos. Sem títulos e sem tabelas.
+10. Para cada procedimento da resposta, diga em um tópico curto a carência máxima pela lei que está na linha dele (Lei 9.656/98, art. 12, V), avisando que o contrato pode ter carência menor e que empresarial com 30 ou mais beneficiários, entrando em até 30 dias, não tem carência (RN 557/2022, art. 6º).
 
 Linhas que a busca da página já achou para esta pergunta:
 ${linhas}
@@ -1662,6 +1687,21 @@ Pergunta do corretor: ${pergunta}`;
     if (cpr) { copiar(textoPronta, cpr); return; }
     const cg = ev.target.closest("[data-copiar-geral]");
     if (cg) { copiar(textosGerais[cg.dataset.copiarGeral] || "", cg); return; }
+    // "ver regra" da carência de um procedimento: abre o cartão de carência em cima, com o prazo dele em destaque
+    const bcar = ev.target.closest("[data-carencia]");
+    if (bcar && ultimo) {
+      const dono = bcar.closest("[data-id]");
+      const linha = dono ? IX.porId.get(+dono.dataset.id) : null;
+      const res = ultimo;
+      const lista = res.exatos.length ? res.exatos : res.aproximados;
+      const p2 = Object.assign({}, res.pergunta, { topicos: Array.from(new Set((res.pergunta.topicos || []).concat("carencia"))) });
+      const ger = $("#gerais");
+      ger.innerHTML = (res.modo === "regras" ? ger.querySelector(".rol-cab")?.outerHTML || "" : "") +
+        cartoesGerais(Object.assign({}, res, { pergunta: p2 }), lista, linha ? M.carenciaDe(linha).tipo : null);
+      const alvo = ger.querySelector('.geral[aria-label="Carência"]') || ger;
+      alvo.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      return;
+    }
     const bd = ev.target.closest("button[data-dut]");
     if (bd) { abreFechaDut(bd); return; }
     if (ev.target.closest("[data-porque-ia]")) { $("#form").requestSubmit(); return; }

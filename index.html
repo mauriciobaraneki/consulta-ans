@@ -177,6 +177,14 @@ button.tag.dut[aria-expanded="true"] { border-color: var(--dut); }
 .pronta-dut h4 { margin: 4px 0 0; font-size: 13.5px; font-weight: 600; }
 .pronta-dut mark { background: var(--dut-soft); color: inherit; border-radius: 2px; }
 
+/* carência, CPT e urgência: botões fixos e cartões (ficam acima da resposta do Claude e das fichas) */
+.atalhos { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 10px 0 0; align-items: center; }
+.atalhos .rot { color: var(--muted); font-size: 13px; margin-right: 2px; }
+.chip-g { border-color: var(--accent); color: var(--accent); font-weight: 500; }
+.chip-g:hover { background: var(--accent-soft); }
+.chip-g[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.gerais { margin-top: 22px; display: grid; gap: 12px; }
+.gerais:empty, .rol:empty { display: none; }
 /* carência, CPT e urgência: regras gerais que não estão no Rol */
 .geral { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; max-width: 86ch; min-width: 0; }
 .geral-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
@@ -239,8 +247,16 @@ footer p { margin: 0; max-width: 90ch; }
       <button class="btn-perguntar" type="submit">Perguntar</button>
     </form>
     <div class="dicas" id="dicas"></div>
+    <div class="atalhos" id="atalhos" aria-label="Regras gerais que não estão no Rol">
+      <span class="rot">Regras gerais (fora do Rol):</span>
+      <button type="button" class="chip chip-g" data-q="carência">Carência</button>
+      <button type="button" class="chip chip-g" data-q="doença preexistente (CPT)">Doença preexistente (CPT)</button>
+      <button type="button" class="chip chip-g" data-q="urgência e emergência">Urgência e emergência</button>
+    </div>
     <p class="aviso-ia" id="aviso-ia" hidden></p>
   </section>
+
+  <section class="gerais" id="gerais" aria-live="polite"></section>
 
   <section class="ia" id="ia" hidden aria-live="polite">
     <div class="ia-topo">
@@ -1346,8 +1362,12 @@ footer p { margin: 0; max-width: 90ch; }
         "dutref", naDut, p.seg, "naDut", lista.length ? null : (naDut[0] && naDut[0].id), filtro);
     }
     const rol = $("#rol");
-    rol.innerHTML = `<div class="rol-cab"><h2>${esc(titulo)}${exemplo ? '<span class="selo-ex">exemplo</span>' : ""}</h2>${sub ? `<p class="sub">${esc(sub)}</p>` : ""}</div>` +
-      `${htmlPronta}${notas}${cartoesGerais(res, lista)}${cartaoPorque(res)}${corpo}`;
+    const cab = `<div class="rol-cab"><h2>${esc(titulo)}${exemplo ? '<span class="selo-ex">exemplo</span>' : ""}</h2>${sub ? `<p class="sub">${esc(sub)}</p>` : ""}</div>`;
+    // carência / CPT / urgência ficam numa seção própria, logo abaixo da pergunta (antes da resposta do Claude e das fichas)
+    const gerais = cartoesGerais(res, lista);
+    $("#gerais").innerHTML = res.modo === "regras" ? cab + gerais : gerais;
+    rol.innerHTML = res.modo === "regras" ? "" : `${cab}${htmlPronta}${notas}${cartaoPorque(res)}${corpo}`;
+    document.querySelectorAll("#atalhos [data-q]").forEach((b) => b.setAttribute("aria-pressed", res.modo === "regras" && b.dataset.q === p.texto ? "true" : "false"));
     abrePendentes(rol);
   }
   function maisResultados(btn) {
@@ -1604,6 +1624,12 @@ Pergunta do corretor: ${pergunta}`;
     perguntarClaude(q, res);
   });
   $("#dicas").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-q]");
+    if (!b) return;
+    campo.value = b.dataset.q;
+    $("#form").requestSubmit();
+  });
+  $("#atalhos").addEventListener("click", (ev) => {
     const b = ev.target.closest("[data-q]");
     if (!b) return;
     campo.value = b.dataset.q;

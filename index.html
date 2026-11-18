@@ -1433,6 +1433,17 @@ Textos oficiais para explicar o que NÃO está no Rol ou não é coberto:
 `;
   }
 
+  // carência / CPT / urgência: os mesmos textos oficiais dos cartões (Lei 9.656/98, RN 557 e RN 558 de 2022)
+  function blocoGeral(res) {
+    const C = DADOS.regras && DADOS.regras.carencia_cpt;
+    const t = res.pergunta.topicos || [];
+    if (!C || !t.length) return "";
+    const partes = [];
+    if (t.includes("carencia")) partes.push("Lei 9.656/98, art. 12, " + C.lei9656_art12_V.join(" "), "RN 557/2022, " + C.rn557_art6, "RN 557/2022, " + C.rn557_art17.join(" "), "RN 557/2022, " + C.rn557_art4);
+    if (t.includes("cpt")) partes.push("Lei 9.656/98, " + C.lei9656_art11.join(" "), "RN 558/2022, art. 2º: " + [C.rn558_art2_I, C.rn558_art2_II, C.rn558_art2_III].join(" "), "RN 557/2022, " + C.rn557_art7, "RN 557/2022, " + C.rn557_art4);
+    if (t.includes("urgencia")) partes.push("Lei 9.656/98, " + C.lei9656_art35C.join(" "), "Lei 9.656/98, art. 12, " + C.lei9656_art12_V[0] + " " + C.lei9656_art12_V[3]);
+    return "\nFora do Rol: textos oficiais ligados a esta pergunta (copiados da lei e das resoluções da ANS):\n- " + [...new Set(partes)].join("\n- ") + "\n";
+  }
   function montaPrompt(pergunta, res) {
     const lista = (res.exatos.length ? res.exatos : res.aproximados).concat(res.naDut || []).slice(0, 30);
     lista.forEach((l) => usadas.set(l.id, l));
@@ -1461,8 +1472,8 @@ Regras gerais da ANS que você pode usar (diga que é regra geral, não linha da
 - O Rol lista procedimentos, não especialidades. O plano ambulatorial cobre "consultas médicas em número ilimitado em clínicas básicas e especializadas (especialidades médicas)... reconhecidas pelo CFM" (RN 465/2021, art. 18, I); as áreas de atuação do CFM não contam como especialidade (art. 18, § 2º).
 - Consultas e sessões com psicólogo, fonoaudiólogo, terapeuta ocupacional e fisioterapeuta não têm limite de quantidade (RN 541/2022).
 - Para transtornos globais do desenvolvimento, incluindo o autismo (TEA), a operadora deve oferecer prestador apto a executar o método ou técnica indicado pelo médico assistente (RN 465/2021, art. 6º, § 4º, incluído pela RN 539/2022).
-- Carência, CPT, coparticipação, reembolso, rede credenciada e preço não estão no Anexo I. Se perguntarem, diga isso.
-${regras}${blocoFora()}
+- Carência, CPT, coparticipação, reembolso, rede credenciada e preço não estão no Anexo I. Se perguntarem, diga isso. Para carência, doença preexistente (CPT) e urgência/emergência, se o bloco "Fora do Rol: textos oficiais" aparecer abaixo, responda com ele (prazos, PME com 30 ou mais beneficiários, adesão, individual), citando a norma e o artigo, e diga que é regra geral da lei e da ANS, não do Rol. Para coparticipação, reembolso, rede e preço, só diga que não estão no Rol.
+${regras}${blocoFora()}${blocoGeral(res)}
 Como responder:
 1. Se as linhas abaixo não bastarem, use buscar_no_rol com as palavras que o Rol usa (ex.: catarata = facectomia; bariátrica = gastroplastia; nefrologia = hemodiálise, diálise peritoneal, biópsia renal, transplante renal; eletrocardiograma = ECG convencional). No máximo 5 chamadas de ferramenta no total.
 2. Comece com uma frase direta: "Sim, ...", "Não, ...", "Depende: ..." ou "Não encontrei no Rol ...".
